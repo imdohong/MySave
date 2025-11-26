@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>북마크 대시보드</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="theme.js"></script>
+</head>
+<body>
+
+    <header class="top-header">
+        <nav class="navbar">
+            <ul class="nav-links">
+                <li class="active"><a href="dashboard.html">대시보드</a></li>
+                <li><a href="bookmark.html">북마크 목록</a></li>
+                <li><a href="tag.html">태그</a></li>
+                <li><a href="reminder.html">리마인드</a></li>
+                <li><a href="setting.html">설정</a></li>
+            </ul>
+        </nav>
+        <div class="search-container">
+            <input type="text" placeholder="저장한 글, 태그 검색">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        
+        <div class="action-row">
+            <button class="btn-primary"><i class="fa-regular fa-bookmark"></i> 북마크 추가하기</button>
+        </div>
+
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>오늘 저장한 글</h3>
+                <div class="stat-value">3 <span class="unit">건</span></div>
+                <p class="stat-desc">어제보다 많이 저장...</p>
+            </div>
+            <div class="stat-card">
+                <h3>미완료 리마인드</h3>
+                <div class="stat-value">5 <span class="unit">건</span></div>
+                <p class="stat-desc">오늘 마감되는 항목...</p>
+            </div>
+            <div class="stat-card">
+                <h3>가장 자주 쓴 태그</h3>
+                <div class="stat-value">AI <span class="badge">Top 1</span></div>
+                <p class="stat-desc">최근 7일간 가장 많이 사용됨</p>
+            </div>
+            <div class="stat-card">
+                <h3>주간 읽기 달성률</h3>
+                <div class="stat-value">98 <span class="unit">%</span></div>
+                <p class="stat-desc">저장한 12개 중 11개를 읽...</p>
+            </div>
+        </section>
+
+        <div class="content-split">
+            
+            <section class="recent-section">
+                <div class="section-header">
+                    <h2>최근 저장 목록</h2>
+                    <a href="#" class="more-link">더보기</a>
+                </div>
+                <div class="card-grid" id="cardContainer">
+                    </div>
+            </section>
+
+            <aside class="sidebar">
+                <div class="sidebar-widget">
+                    <div class="section-header">
+                        <h2>예정된 리마인드</h2>
+                        <a href="#" class="more-link">더보기</a>
+                    </div>
+                    <div class="reminder-list">
+                        <div class="day-group">
+                            <div class="day-label"><span class="dot blue"></span> 오늘</div>
+                            <div class="reminder-item">
+                                <span class="time">오전 9:00</span>
+                                <span class="task">AI 논문 읽기</span>
+                            </div>
+                            <div class="reminder-item">
+                                <span class="time">오전 9:00</span>
+                                <span class="task">AI 논문 읽기</span>
+                            </div>
+                            <div class="reminder-item">
+                                <span class="time">오전 9:00</span>
+                                <span class="task">AI 논문 읽기</span>
+                            </div>
+                        </div>
+                        <div class="day-group">
+                            <div class="day-label"><span class="dot yellow"></span> 내일</div>
+                            <div class="reminder-item">
+                                <span class="time">오전 9:00</span>
+                                <span class="task">AI 논문 읽기</span>
+                            </div>
+                            <div class="reminder-item">
+                                <span class="time">오전 9:00</span>
+                                <span class="task">AI 논문 읽기</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget">
+                    <div class="section-header">
+                        <h2>자주 쓰는 태그</h2>
+                        <a href="#" class="more-link">더보기</a>
+                    </div>
+                    <div class="tag-cloud">
+                        <span class="tag-pill blue">#AI</span>
+                        <span class="tag-pill navy">#뉴스</span>
+                        <span class="tag-pill navy">#Work</span>
+                        <span class="tag-pill navy">#Work</span>
+                        <span class="tag-pill navy">#Work</span>
+                    </div>
+                </div>
+
+                <div class="sidebar-widget">
+                     <div class="section-header">
+                        <h2>즐겨찾는 태그</h2>
+                    </div>
+                    </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
