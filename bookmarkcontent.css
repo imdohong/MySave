@@ -1,0 +1,251 @@
+/* 기본 설정 및 리셋 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pretendard', sans-serif;
+}
+
+body {
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+a { text-decoration: none; color: inherit; }
+li { list-style: none; }
+button { border: none; background: none; cursor: pointer; font-family: inherit; }
+
+/* ================= 헤더 스타일 ================= */
+.top-header {
+    background-color: white;
+    padding: 0 40px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links li {
+    position: relative;
+    font-weight: 500;
+    color: #777;
+    padding: 24px 0;
+}
+
+.nav-links li.active {
+    color: #111;
+    font-weight: 700;
+}
+
+.nav-links li.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #111;
+}
+
+.search-container {
+    position: relative;
+    width: 300px;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 10px 15px 10px 40px; /* 아이콘 공간 확보 */
+    background-color: #f0f2f5;
+    border: none;
+    border-radius: 20px;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-container i {
+    position: absolute;
+    left: 15px; /* 왼쪽으로 이동 */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+
+/* 메인 컨텐츠 레이아웃 */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.back-navigation {
+    display: flex;               /* 플렉스 박스 */
+    justify-content: space-between; /* 양 끝 정렬 */
+    align-items: center;
+    margin-bottom: 20px;
+    height: 40px;
+}
+
+.btn-back {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.grid-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* 좌측 2 : 우측 1 비율 */
+    gap: 24px;
+}
+
+/* 공통 카드 스타일 */
+.card {
+    background-color: var(--white);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+/* 왼쪽 컨텐츠 영역 */
+.thumbnail-placeholder {
+    width: 100%;
+    height: 320px;
+    background-color: #E6E8EB; /* 회색 박스 */
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.article-header {
+    margin-bottom: 30px;
+}
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.title-row h1 {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.btn-star {
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    color:#facc15;
+    cursor: pointer;
+
+}
+
+.meta-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tag {
+    background-color: var(--tag-bg);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.date {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.article-body p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #4E5968;
+    margin-bottom: 16px;
+}
+
+/* 오른쪽 사이드바 */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.ai-card .card-title {
+    color: #3182F6; /* AI 아이콘/타이틀 색상 */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 18px;
+}
+
+.memo-card .card-title {
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: var(--text-primary);
+}
+
+.card-content {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 20px;
+    min-height: 60px;
+}
+
+.card-content textarea {
+    width: 100%;
+    border: none;
+    resize: none;
+    font-size: 14px;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    color: #333;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-light-blue {
+    background-color: var(--btn-bg-blue);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    background-color: #C5DCFF;
+    color:#1B6FF6;
+    transition: background 0.2s;
+}
+
+
+
+/* 반응형 처리 */
+@media (max-width: 768px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+    }
+}

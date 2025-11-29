@@ -312,7 +312,7 @@ button { border: none; background: none; cursor: pointer; font-family: inherit; 
 .reminder-item .time { font-size: 11px; color: #888; font-weight: 600; }
 .tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
 .tag-pill { padding: 6px 12px; border-radius: 20px; font-size: 12px; color: white; font-weight: 500; }
-.tag-pill.blue { background-color: #3b5998; } .tag-pill.navy { background-color: #475569; }
+.tag-pill.blue { background-color: #3b5998; } .tag-pill.navy { background-color: #3b5998;}
 
 
 /* 반응형 */

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySave - 북마크 상세</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="bookmarkcontent.css">
+</head>
+<body>
+    <header class="top-header">
+        <nav class="navbar">
+            <ul class="nav-links">
+                <li><a href="dashboard.html">대시보드</a></li>
+                <li class="active"><a href="bookmark.html">북마크 목록</a></li>
+                <li><a href="tag.html">태그</a></li>
+                <li><a href="reminder.html">리마인드</a></li>
+                <li><a href="setting.html">설정</a></li>
+            </ul>
+        </nav>
+        <div class="search-container">
+            <input type="text" placeholder="저장한 글, 태그 검색">
+            <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="back-navigation">
+            <a href="bookmark.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> 목록으로</a>
+        </div>
+
+        <div class="grid-layout">
+            <section class="content-area card">
+                <div class="thumbnail-placeholder"></div>
+
+                <div class="article-header">
+                    <div class="title-row">
+                        <h1 id="detailTitle">Loading...</h1>
+                        <button class="btn-star" id="detailStarBtn"><i class="fa-regular fa-star"></i></button>
+                    </div>
+                    <div class="meta-row">
+                        <span class="tag" id="detailTag">#Tag</span>
+                        <span class="date" id="detailDate">0000.00.00</span>
+                    </div>
+                </div>
+
+                <div class="article-body" id="detailContent">
+                    <p>데이터를 불러오는 중입니다...</p>
+                </div>
+            </section>
+
+            <aside class="sidebar">
+                <div class="card ai-card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <h3>AI 요약 노트</h3>
+                    </div>
+                    <div class="card-content">
+                        <p id="detailAiSummary">요약 내용이 없습니다. 요약 생성 버튼을 눌러주세요.</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn-light-blue" id="generateSummaryBtn">요약 다시 생성하기</button>
+                    </div>
+                </div>
+
+                <div class="card memo-card">
+                    <div class="card-title">
+                        <h3>메모</h3>
+                    </div>
+                    <div class="card-content">
+                        <textarea id="detailMemo" readonly placeholder="메모를 입력하세요."></textarea>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn-light-blue" id="editMemoBtn">메모 수정하기</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="bookmarkcontent.js"></script>
+</body>
+</html>
