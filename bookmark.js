@@ -1,17 +1,20 @@
-// 1. 초기 더미 데이터
+// 1. 초기 더미 데이터 (image 필드 추가됨)
+// 이미지가 필요한 곳에는 URL을 넣고, 없으면 null 또는 ""(빈 문자열)로 둡니다.
 const initialBookmarkData = [
     { 
         id: 1, 
         title: "React 19의 새로운 기능 완벽 정리", 
         tag: "Dev", 
         tagColor: "#3b5998", 
-        date: "2025.11.21", 
+        date: "2025.11.30", // 오늘 날짜로 업데이트됨
         isStarred: true, 
         isRead: false, 
-        hasSummary: true,
-        content: "React 19의 새로운 기능인 Actions, useOptimistic 등을 소개하고 있습니다...",
-        aiSummary: "React 19는 서버 컴포넌트 통합 강화...",
-        memo: "이번 프로젝트에 바로 적용해봐야겠다."
+        hasSummary: true, 
+        content: "React 19의 새로운 기능인 Actions...", 
+        aiSummary: "요약...", 
+        memo: "메모...",
+        // [테스트용] 이미지가 있는 경우 (무료 이미지 서비스 URL)
+        image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1000&auto=format&fit=crop"
     },
     { 
         id: 2, 
@@ -21,10 +24,12 @@ const initialBookmarkData = [
         date: "2025.11.20", 
         isStarred: false, 
         isRead: true, 
-        hasSummary: false,
-        content: "2025년 디자인 트렌드는...",
-        aiSummary: "",
-        memo: ""
+        hasSummary: false, 
+        content: "2025년 디자인 트렌드는...", 
+        aiSummary: "", 
+        memo: "",
+        // [테스트용] 이미지가 있는 경우
+        image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop"
     },
     { 
         id: 3, 
@@ -34,56 +39,54 @@ const initialBookmarkData = [
         date: "2025.11.19", 
         isStarred: true, 
         isRead: true, 
-        hasSummary: true,
-        content: "비동기 커뮤니케이션의 중요성이...",
-        aiSummary: "비동기 커뮤니케이션 확산...",
-        memo: "우리 팀 회의 규칙에 건의해보기."
+        hasSummary: true, 
+        content: "비동기 커뮤니케이션의 중요성이...", 
+        aiSummary: "", 
+        memo: "",
+        image: null // [테스트용] 이미지가 없는 경우 -> 글만 나옴
     },
-    { id: 4, title: "프론트엔드 성능 최적화 베스트 프랙티스", tag: "Dev", tagColor: "#3b5998", date: "2025.11.18", isStarred: false, isRead: false, hasSummary: true, content: "내용...", aiSummary: "요약...", memo: "" },
-    { id: 5, title: "UX 심리학: 사용자를 사로잡는 법칙들", tag: "Design", tagColor: "#E91E63", date: "2025.11.17", isStarred: true, isRead: false, hasSummary: false, content: "내용...", aiSummary: "", memo: "" },
-    { id: 6, title: "생산성을 높이는 노션 활용 꿀팁 10가지", tag: "Work", tagColor: "#2E7D32", date: "2025.11.16", isStarred: false, isRead: true, hasSummary: true, content: "내용...", aiSummary: "요약...", memo: "" },
-    { id: 7, title: "타입스크립트 고급 기능 활용하기", tag: "Dev", tagColor: "#3b5998", date: "2025.11.15", isStarred: true, isRead: true, hasSummary: true, content: "내용...", aiSummary: "요약...", memo: "" },
-    { id: 8, title: "피그마 오토레이아웃 마스터하기", tag: "Design", tagColor: "#E91E63", date: "2025.11.14", isStarred: false, isRead: false, hasSummary: false, content: "내용...", aiSummary: "", memo: "" },
-    { id: 9, title: "성공적인 리모트 워크를 위한 문화 만들기", tag: "Work", tagColor: "#2E7D32", date: "2025.11.13", isStarred: false, isRead: true, hasSummary: true, content: "내용...", aiSummary: "요약...", memo: "" },
+    // 나머지 데이터들도 image: null 로 설정한다고 가정
+    { id: 4, title: "프론트엔드 성능 최적화", tag: "Dev", tagColor: "#3b5998", date: "2025.11.18", isStarred: false, isRead: false, hasSummary: true, content: "내용...", aiSummary: "", memo: "", image: null },
+    { id: 5, title: "UX 심리학 법칙", tag: "Design", tagColor: "#E91E63", date: "2025.11.17", isStarred: true, isRead: false, hasSummary: false, content: "내용...", aiSummary: "", memo: "", image: null },
+    { id: 6, title: "노션 활용 꿀팁", tag: "Work", tagColor: "#2E7D32", date: "2025.11.16", isStarred: false, isRead: true, hasSummary: true, content: "내용...", aiSummary: "", memo: "", image: null },
+    { id: 7, title: "타입스크립트 활용", tag: "Dev", tagColor: "#3b5998", date: "2025.11.15", isStarred: true, isRead: true, hasSummary: true, content: "내용...", aiSummary: "", memo: "", image: null },
+    { id: 8, title: "피그마 오토레이아웃", tag: "Design", tagColor: "#E91E63", date: "2025.11.14", isStarred: false, isRead: false, hasSummary: false, content: "내용...", aiSummary: "", memo: "", image: null },
+    { id: 9, title: "리모트 워크 문화", tag: "Work", tagColor: "#2E7D32", date: "2025.11.13", isStarred: false, isRead: true, hasSummary: true, content: "내용...", aiSummary: "", memo: "", image: null },
 ];
 
-// 전역 상태 변수
 let currentFilterType = 'all';
-let currentSortOrder = 'latest'; // 'latest' (최신순) or 'oldest' (오래된순)
+let currentSortOrder = 'latest';
+let currentPage = 1;
+const itemsPerPage = 12;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 로컬 스토리지 초기화
     if (!localStorage.getItem('bookmarks')) {
         localStorage.setItem('bookmarks', JSON.stringify(initialBookmarkData));
     }
 
-    renderBookmarks('all');
+    renderBookmarks();
 
-    // 1. 필터 버튼 (전체, 즐겨찾기 등)
+    // --- 기존 이벤트 리스너들 (필터, 검색, 정렬 등) ---
     const filterButtons = document.querySelectorAll('.filter-btn');
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
-            
             currentFilterType = button.getAttribute('data-filter');
-            const searchQuery = document.querySelector('.search-container input').value;
-            renderBookmarks(currentFilterType, searchQuery);
+            currentPage = 1;
+            renderBookmarks();
         });
     });
 
-    // 2. 검색창
     const searchInput = document.querySelector('.search-container input');
-    searchInput.addEventListener('input', (e) => {
-        const searchQuery = e.target.value;
-        renderBookmarks(currentFilterType, searchQuery);
+    searchInput.addEventListener('input', () => {
+        currentPage = 1;
+        renderBookmarks();
     });
 
-    // 3. [추가됨] 정렬 버튼 (최신순 <-> 오래된순)
     const sortBtn = document.querySelector('.sort-btn');
     if (sortBtn) {
         sortBtn.addEventListener('click', () => {
-            // 정렬 상태 토글
             if (currentSortOrder === 'latest') {
                 currentSortOrder = 'oldest';
                 sortBtn.innerHTML = '오래된순 <i class="fa-solid fa-chevron-up"></i>';
@@ -91,30 +94,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentSortOrder = 'latest';
                 sortBtn.innerHTML = '최신순 <i class="fa-solid fa-chevron-down"></i>';
             }
-            
-            // 다시 렌더링
-            const searchQuery = searchInput.value;
-            renderBookmarks(currentFilterType, searchQuery);
+            renderBookmarks();
         });
     }
+
+    // 페이지네이션
+    const prevBtn = document.querySelector('.pagination .page-control:first-child');
+    const nextBtn = document.querySelector('.pagination .page-control:last-child');
+
+    prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            renderBookmarks();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        const totalPages = parseInt(document.querySelector('.page-info').dataset.totalPages || 1);
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderBookmarks();
+        }
+    });
 });
 
 /**
- * 북마크 렌더링 함수
+ * 북마크 렌더링 함수 (이미지 유무 체크 로직 추가됨)
  */
-function renderBookmarks(filterType, searchQuery = '') {
+function renderBookmarks() {
+    const searchQuery = document.querySelector('.search-container input').value;
     const container = document.getElementById('bookmarkCardContainer');
     container.innerHTML = '';
 
     const bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
 
-    // 1단계: 탭 필터링
+    // 필터링 및 정렬 로직 (기존과 동일)
     let filteredData = bookmarks;
-    if (filterType === 'starred') filteredData = bookmarks.filter(item => item.isStarred);
-    else if (filterType === 'read') filteredData = bookmarks.filter(item => item.isRead);
-    else if (filterType === 'unread') filteredData = bookmarks.filter(item => !item.isRead);
+    if (currentFilterType === 'starred') filteredData = bookmarks.filter(item => item.isStarred);
+    else if (currentFilterType === 'read') filteredData = bookmarks.filter(item => item.isRead);
+    else if (currentFilterType === 'unread') filteredData = bookmarks.filter(item => !item.isRead);
 
-    // 2단계: 검색어 필터링
     if (searchQuery.trim() !== '') {
         const query = searchQuery.toLowerCase();
         filteredData = filteredData.filter(item => 
@@ -124,36 +143,54 @@ function renderBookmarks(filterType, searchQuery = '') {
         );
     }
 
-    // 3단계: [추가됨] 정렬 로직 (날짜 문자열 비교)
     filteredData.sort((a, b) => {
-        // 날짜 형식 "2025.11.21"을 비교하기 위해 Date 객체로 변환하거나 문자열 비교
-        // 문자열 비교 (YYYY.MM.DD 형식이라 가능)
-        if (currentSortOrder === 'latest') {
-            return b.date.localeCompare(a.date); // 내림차순 (최신 날짜가 위로)
-        } else {
-            return a.date.localeCompare(b.date); // 오름차순 (오래된 날짜가 위로)
-        }
+        if (currentSortOrder === 'latest') return b.date.localeCompare(a.date);
+        else return a.date.localeCompare(b.date);
     });
 
-    // 결과 없음 처리
-    if (filteredData.length === 0) {
+    const totalItems = filteredData.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+
+    const pageInfo = document.querySelector('.page-info');
+    if (pageInfo) {
+        pageInfo.textContent = `${currentPage} / ${totalPages}`;
+        pageInfo.dataset.totalPages = totalPages;
+    }
+
+    if (totalItems === 0) {
         container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888; margin-top: 50px;">검색 결과가 없습니다.</p>';
         return;
     }
 
-    // 카드 생성
-    filteredData.forEach(item => {
+    // 카드 생성 루프
+    paginatedData.forEach(item => {
+        // 요약 배지 생성
         const summaryBadge = item.hasSummary 
             ? `<span class="summary-tag">요약됨</span>` 
             : `<button class="summary-btn" onclick="event.stopPropagation(); alert('요약 생성 기능 준비중')">요약하기</button>`;
 
         const starClass = item.isStarred ? 'fa-solid fa-star active' : 'fa-regular fa-star';
 
-        const cardHTML = `
-            <div class="card" onclick="goToDetail(${item.id})">
+        // [핵심 변경] 이미지가 있는지 확인하여 HTML 조립
+        let imageHTML = '';
+        
+        // 이미지가 있으면: 회색 박스(card-img) + 이미지 태그 + 요약 배지
+        if (item.image) {
+            imageHTML = `
                 <div class="card-img">
+                    <img src="${item.image}" alt="cover image">
                     ${summaryBadge}
                 </div>
+            `;
+        } 
+        // 이미지가 없으면: imageHTML은 빈 문자열이 됨 (즉, 회색 박스 자체가 생성되지 않음)
+        // 주의: 이미지가 없으면 '요약됨' 배지도 같이 사라집니다. (원하시면 본문 쪽으로 이동 가능)
+
+        const cardHTML = `
+            <div class="card" onclick="goToDetail(${item.id})">
+                ${imageHTML} 
                 <div class="card-body">
                     <h4 class="card-title">${item.title}</h4>
                     <div class="card-footer">
@@ -172,6 +209,7 @@ function renderBookmarks(filterType, searchQuery = '') {
     });
 }
 
+// ... (goToDetail, editBookmark, toggleBookmarkStar, deleteBookmark 함수들은 기존과 동일 유지) ...
 function goToDetail(id) {
     localStorage.setItem('currentBookmarkId', id);
     localStorage.removeItem('editMode');
@@ -186,9 +224,8 @@ function editBookmark(event, id) {
 }
 
 function toggleBookmarkStar(event, id) {
-    event.stopPropagation(); 
+    event.stopPropagation();
     const element = event.target;
-    
     if (element.classList.contains('fa-solid')) {
         element.classList.replace('fa-solid', 'fa-regular');
         element.classList.remove('active');
@@ -196,7 +233,6 @@ function toggleBookmarkStar(event, id) {
         element.classList.replace('fa-regular', 'fa-solid');
         element.classList.add('active');
     }
-
     const bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
     const targetIndex = bookmarks.findIndex(b => b.id === id);
     if (targetIndex > -1) {
@@ -209,10 +245,9 @@ function deleteBookmark(id) {
     if(confirm('정말 삭제하시겠습니까?')) {
         const bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
         const newBookmarks = bookmarks.filter(b => b.id !== id);
-        
         localStorage.setItem('bookmarks', JSON.stringify(newBookmarks));
-        
-        const searchQuery = document.querySelector('.search-container input').value;
-        renderBookmarks(currentFilterType, searchQuery);
+        const newTotalPages = Math.ceil(newBookmarks.length / itemsPerPage) || 1;
+        if (currentPage > newTotalPages) currentPage = newTotalPages;
+        renderBookmarks();
     }
 }
