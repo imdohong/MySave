@@ -1,61 +1,84 @@
-// 최근 저장 목록 데이터 (이미지 내용을 기반으로 생성)
-const savedItems = [
+// 1. 초기 샘플 데이터
+const sampleData = [
     {
+        id: 1,
         title: "React 19의 새로운 기능 완벽 정리",
         tag: "Dev",
         tagColor: "#3b5998",
         date: "2025.11.21",
-        bgColor: "#ffb3b3", // 파스텔 레드
+        bgColor: "#ffb3b3", 
         isStarred: true
     },
     {
+        id: 2,
         title: "2025 AI 디자인 트렌드 분석 리포트",
         tag: "Design",
-        tagColor: "#3b5998", // 네이비 계열
+        tagColor: "#3b5998", 
         date: "2025.11.21",
-        bgColor: "#cce0ff", // 파스텔 블루
+        bgColor: "#cce0ff", 
         isStarred: true
     },
     {
+        id: 3,
         title: "효율적인 팀 커뮤니케이션을 위한 가이드",
         tag: "Work",
         tagColor: "#475569",
         date: "2025.11.21",
-        bgColor: "#b3e6b3", // 파스텔 그린
+        bgColor: "#b3e6b3", 
         isStarred: true
     },
     {
-        title: "React 19의 새로운 기능 (2)",
+        id: 4,
+        title: "프론트엔드 성능 최적화 베스트 프랙티스",
         tag: "Dev",
         tagColor: "#3b5998",
-        date: "2025.11.21",
-        bgColor: "#ffdbb3", // 파스텔 오렌지
-        isStarred: true
+        date: "2025.11.20",
+        bgColor: "#ffdbb3", 
+        isStarred: false
     },
     {
-        title: "이미지가 없을 때는 여기에 텍스트를 넣을 거 같습니다.",
-        tag: "Dev",
+        id: 5,
+        title: "UX 심리학: 사용자를 사로잡는 법칙들",
+        tag: "Design",
         tagColor: "#3b5998",
-        date: "2025.11.21",
-        bgColor: "#e6e6e6", // 파스텔 그레이
-        isStarred: true
-    },
-    {
-        title: "React 19의 새로운 기능 (3)",
-        tag: "Dev",
-        tagColor: "#3b5998",
-        date: "2025.11.21",
-        bgColor: "#d9d9d9", // 그레이
-        isStarred: true
+        date: "2025.11.19",
+        bgColor: "#e6e6e6", 
+        isStarred: false
     }
 ];
 
-// DOM 로드 시 실행
-document.addEventListener('DOMContentLoaded', () => {
-    const cardContainer = document.getElementById('cardContainer');
+// 2. 데이터 로드 (Read Only)
 
-    // 데이터 기반으로 카드 HTML 생성 및 주입
-    savedItems.forEach((item, index) => {
+// 저장소에서 데이터 가져오기
+let savedItems = JSON.parse(localStorage.getItem('myBookmarks'));
+
+// 데이터가 없으면(첫 방문 시) 샘플 데이터로 초기화 (확장 프로그램 시뮬레이션)
+if (!savedItems || savedItems.length === 0) {
+    savedItems = sampleData;
+    localStorage.setItem('myBookmarks', JSON.stringify(savedItems));
+}
+
+// 3. 화면 렌더링 (View)
+document.addEventListener('DOMContentLoaded', () => {
+    renderCards();
+    
+    // 북마크 추가 버튼은 이제 확장 프로그램의 역할이므로 이벤트 연결을 하지 않습니다.
+    // HTML에 버튼이 남아있다면 "확장 프로그램을 이용해주세요" 같은 알림만 띄우거나, 버튼을 숨기는 것이 좋습니다.
+    const addBtn = document.querySelector('.btn-primary');
+    if(addBtn) {
+        addBtn.addEventListener('click', () => {
+            alert("북마크 추가는 크롬 확장 프로그램을 이용해주세요! 🧩");
+        });
+    }
+});
+
+function renderCards() {
+    const cardContainer = document.getElementById('cardContainer');
+    cardContainer.innerHTML = ''; 
+
+    savedItems.forEach((item) => {
+        const activeClass = item.isStarred ? 'active' : '';
+
         const cardHTML = `
             <div class="card">
                 <div class="card-img" style="background-color: ${item.bgColor};">
@@ -67,7 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="tag-badge" style="background-color: ${item.tagColor}">#${item.tag}</span>
                         <div class="date-star">
                             <span>${item.date}</span>
-                            <i class="fa-solid fa-star star-icon ${item.isStarred ? 'active' : ''}" onclick="toggleStar(this)"></i>
+                            <i class="fa-solid fa-star star-icon ${activeClass}" 
+                               onclick="toggleStar(this, ${item.id})"></i>
                         </div>
                     </div>
                 </div>
@@ -75,16 +99,18 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         cardContainer.innerHTML += cardHTML;
     });
-});
-
-// 별표 토글 함수
-function toggleStar(element) {
-    element.classList.toggle('active');
-    
-    // 실제 앱에서는 여기서 서버로 API 요청을 보내 상태를 저장합니다.
-    if(element.classList.contains('active')) {
-        console.log("즐겨찾기 추가됨");
-    } else {
-        console.log("즐겨찾기 해제됨");
-    }
 }
+
+// 4. 상태 관리 (별표 토글 등)
+
+window.toggleStar = function(element, id) {
+    const targetItem = savedItems.find(item => item.id === id);
+    
+    if (targetItem) {
+        targetItem.isStarred = !targetItem.isStarred;
+        
+        // 상태 변경 후 저장소 업데이트 & 화면 갱신
+        localStorage.setItem('myBookmarks', JSON.stringify(savedItems));
+        renderCards();
+    }
+};
