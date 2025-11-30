@@ -162,9 +162,12 @@ function setupEventListeners(currentData, allBookmarks) {
             
             if (previousPage === 'dashboard') {
                 window.location.href = 'dashboard.html';
+            } else if (previousPage === 'bookmark') {
+                window.location.href = 'bookmark.html';
+            } else if (previousPage === 'index') {  // 👈 이 부분만 확인/추가
+                window.location.href = 'index.html'; 
             } else {
-                // dashboard가 아니면 무조건 북마크 목록으로 가게 되어 있음
-                window.location.href = 'bookmark.html'; 
+                history.back();
             }
         });
 

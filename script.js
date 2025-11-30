@@ -5,13 +5,10 @@ function logout() {
     if(confirm("로그아웃 하시겠습니까?")) alert("로그아웃 되었습니다.");
 }
 
-// ★★★ [NEW] 추천 위젯 데이터 및 렌더링 ★★★
-const miniData = [
-    { id: 1, title: "React 19의 새로운 기능 완벽 정리", tag: "Dev", color: "#ffccd5" }, // 핑크
-    { id: 2, title: "2025 AI 디자인 트렌드 분석", tag: "Design", color: "#fff4bd" },    // 노랑
-    { id: 3, title: "효율적인 팀 커뮤니케이션 가이드", tag: "Work", color: "#e2f0cb" },   // 그린
-    { id: 4, title: "프론트엔드 성능 최적화 팁", tag: "Dev", color: "#e2e2e2" }         // 그레이
-];
+// ★★★ [NEW] 추천 위젯 데이터 및 렌더링 (LocalStorage 연동) ★★★
+document.addEventListener('DOMContentLoaded', () => {
+    renderMiniCards();
+});
 
 function renderMiniCards() {
     const container = document.getElementById('miniCardGrid');
@@ -19,21 +16,65 @@ function renderMiniCards() {
 
     container.innerHTML = '';
 
-    miniData.forEach(item => {
+    // 1. LocalStorage에서 데이터 가져오기
+    const storedData = localStorage.getItem('bookmarks');
+    
+    // 데이터가 없으면 안내 메시지 표시
+    if (!storedData) {
+        container.innerHTML = '<p style="padding: 20px; color: #888;">저장된 글이 없습니다.</p>';
+        return;
+    }
+
+    let bookmarks = JSON.parse(storedData);
+
+    // 2. 날짜 기준 내림차순 정렬 (최신글이 먼저 오게)
+    bookmarks.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // 3. 상위 4개만 자르기
+    const top4 = bookmarks.slice(0, 4);
+
+    // 4. 카드 HTML 생성
+    top4.forEach(item => {
+        // 이미지가 있으면 이미지 태그, 없으면 '요약됨' 배지 표시 로직
+        let imageContent;
+        if (item.image) {
+            imageContent = `<img src="${item.image}" alt="썸네일" style="width:100%; height:100%; object-fit:cover;">`;
+        } else {
+            imageContent = `<span class="mini-badge">요약됨</span>`;
+        }
+
+        // 태그 색상이 없으면 기본값
+        const tagColor = item.tagColor || '#eee';
+        // 배경색이 없으면 기본값
+        const bgColor = item.bgColor || '#f0f0f0';
+
+        // HTML 구조 조립 (CSS 클래스명에 맞춰서 구성)
         const html = `
-            <div class="mini-card">
-                <div class="mini-thumb" style="background-color: ${item.color};">
-                    <span class="mini-badge">요약됨</span>
+            <div class="mini-card" onclick="goToDetailFromIndex(${item.id})">
+                <div class="mini-card-img" style="background-color: ${bgColor};">
+                    ${imageContent}
                 </div>
-                <div class="mini-title">${item.title}</div>
-                <span class="mini-tag">#${item.tag}</span>
+                <div class="mini-card-body">
+                    <div class="mini-card-title">${item.title}</div>
+                    <span class="mini-card-tag" style="color: ${tagColor}; border: 1px solid ${tagColor};">#${item.tag}</span>
+                </div>
             </div>
         `;
         container.innerHTML += html;
     });
 }
 
-// 페이지 로드 시 실행
-document.addEventListener('DOMContentLoaded', () => {
-    renderMiniCards();
-});
+// 5. 클릭 시 상세 페이지로 이동하는 함수
+function goToDetailFromIndex(id) {
+    // 상세 페이지가 어떤 글을 보여줄지 ID 저장
+    localStorage.setItem('currentBookmarkId', id);
+    
+    // ★ 중요: 'index' 페이지에서 왔다고 표시 (나중에 '목록으로' 눌렀을 때 여기로 돌아오게 함)
+    localStorage.setItem('previousPage', 'index'); 
+    
+    // 수정 모드는 끄고 이동
+    localStorage.setItem('editMode', 'false');
+
+    // 이동
+    window.location.href = 'bookmarkcontent.html';
+}
