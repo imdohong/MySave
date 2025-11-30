@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function renderDetail(data) {
-    // 1. 텍스트 정보 채우기
+    // 텍스트 정보
     document.getElementById('detailTitle').textContent = data.title;
     
     const tagEl = document.getElementById('detailTag');
@@ -35,47 +35,53 @@ function renderDetail(data) {
     tagEl.style.backgroundColor = data.tagColor || '#555';
 
     document.getElementById('detailDate').textContent = data.date;
-    document.getElementById('detailContent').innerHTML = data.content || "<p>내용이 없습니다.</p>";
-
-    // 2. [핵심] 이미지 처리 로직
-    const imageContainer = document.querySelector('.thumbnail-placeholder');
     
-    if (data.image) {
-        // 이미지가 있으면: 회색 박스를 보이게 하고, 그 안에 img 태그 삽입
+    // 본문 (줄바꿈 처리 포함)
+    const contentHtml = data.content ? data.content.replace(/\n/g, '<br>') : "<p>내용이 없습니다.</p>";
+    document.getElementById('detailContent').innerHTML = contentHtml;
+
+    // 이미지 처리 (이미지가 없으면 영역 숨김)
+    const imageContainer = document.querySelector('.thumbnail-placeholder');
+    if (data.image && data.image.trim() !== "") {
         imageContainer.style.display = 'block'; 
         imageContainer.innerHTML = `<img src="${data.image}" alt="Cover Image" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">`;
     } else {
-        // 이미지가 없으면: 회색 박스를 아예 숨김 (display: none) -> 글이 위로 올라감
-        imageContainer.style.display = 'none';
+        imageContainer.style.display = 'none'; // 공간 삭제
         imageContainer.innerHTML = '';
     }
 
-    // 3. 별표 아이콘 상태
+    // 별표 아이콘 상태
     const starIcon = document.querySelector('#detailStarBtn i');
-    if (data.isStarred) {
-        starIcon.className = 'fa-solid fa-star';
-        starIcon.style.color = '#facc15';
-    } else {
-        starIcon.className = 'fa-regular fa-star';
-        starIcon.style.color = '#facc15';
-    }
+    updateStarUI(starIcon, data.isStarred);
 
-    // 4. 요약 및 메모
+    // 요약 및 메모
     document.getElementById('detailAiSummary').textContent = data.aiSummary || "작성된 요약이 없습니다.";
     document.getElementById('detailMemo').value = data.memo || "";
 }
 
-// [수정 모드 함수] (기존과 동일하게 테두리 제거 스타일 적용됨)
+// 별표 UI 업데이트 헬퍼 함수
+function updateStarUI(iconElement, isStarred) {
+    if (isStarred) {
+        iconElement.className = 'fa-solid fa-star';
+        iconElement.style.color = '#facc15';
+    } else {
+        iconElement.className = 'fa-regular fa-star';
+        iconElement.style.color = ''; // 기본색(회색 등)
+    }
+}
+
+// 수정 모드 활성화 함수
 function enableMainEditMode(currentData, allBookmarks) {
     const titleEl = document.getElementById('detailTitle');
     const contentEl = document.getElementById('detailContent');
     const backNav = document.querySelector('.back-navigation'); 
 
+    // 편집 가능 설정
     titleEl.contentEditable = true;
     contentEl.contentEditable = true;
     
-    // 테두리 스타일 (파란 점선, 검은 테두리 제거)
-    const editStyle = "1px dashed rgb(162 187 223)";
+    // 편집 중임을 알리는 스타일
+    const editStyle = "1px dashed #3182F6"; // 파란 점선
     
     titleEl.style.border = editStyle;
     titleEl.style.outline = "none";
@@ -89,100 +95,130 @@ function enableMainEditMode(currentData, allBookmarks) {
     
     titleEl.focus();
 
+    // 저장 버튼 생성 (중복 생성 방지)
     if (!document.getElementById('saveMainBtn')) {
         const saveBtn = document.createElement('button');
         saveBtn.id = 'saveMainBtn';
         saveBtn.innerText = '수정 완료';
         
-        saveBtn.style.padding = '8px 16px';
-        saveBtn.style.backgroundColor = '#3182F6';
-        saveBtn.style.color = '#fff';
-        saveBtn.style.border = 'none';
-        saveBtn.style.borderRadius = '8px';
-        saveBtn.style.cursor = 'pointer';
-        saveBtn.style.fontSize = '14px';
-        saveBtn.style.fontWeight = 'bold';
-        saveBtn.style.boxShadow = '0 2px 5px rgba(49, 130, 246, 0.3)';
+        // 버튼 스타일링
+        Object.assign(saveBtn.style, {
+            padding: '8px 16px',
+            backgroundColor: '#3182F6',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            boxShadow: '0 2px 5px rgba(49, 130, 246, 0.3)',
+            marginLeft: 'auto' // 우측 정렬용
+        });
 
         backNav.appendChild(saveBtn);
 
+        // 저장 버튼 클릭 이벤트
         saveBtn.addEventListener('click', () => {
-            const newTitle = titleEl.textContent;
-            const newContent = contentEl.innerHTML;
-
+            // 날짜 갱신
             const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const newDate = `${year}.${month}.${day}`;
+            const newDate = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
 
-            currentData.title = newTitle;
-            currentData.content = newContent;
+            // 데이터 업데이트
+            currentData.title = titleEl.textContent;
+            // innerText는 줄바꿈을 유지하고 HTML 태그는 제거하는 경향이 있어 innerHTML 대신 사용 고려 가능하나, 
+            // 여기선 HTML 편집을 허용하므로 innerHTML 사용
+            currentData.content = contentEl.innerHTML; 
             currentData.date = newDate; 
             
+            // 화면 갱신
             document.getElementById('detailDate').textContent = newDate;
 
+            // 로컬 스토리지 저장
             localStorage.setItem('bookmarks', JSON.stringify(allBookmarks));
 
             alert('글이 수정되었습니다.');
 
+            // 편집 모드 종료
             titleEl.contentEditable = false;
             contentEl.contentEditable = false;
             titleEl.style.border = "none";
-            contentEl.style.border = "none";
-            titleEl.style.padding = "0";
             contentEl.style.padding = "0";
+            contentEl.style.border = "none";
             
             saveBtn.remove(); 
-            localStorage.removeItem('editMode');
+            localStorage.removeItem('editMode'); // 수정모드 상태 해제
         });
     }
 }
 
 function setupEventListeners(currentData, allBookmarks) {
-    const bookmarkBtn = document.getElementById('detailStarBtn');
-    bookmarkBtn.addEventListener('click', () => {
-        const icon = bookmarkBtn.querySelector('i');
-        currentData.isStarred = !currentData.isStarred;
-        
-        if (currentData.isStarred) {
-            icon.className = 'fa-solid fa-star';
-        } else {
-            icon.className = 'fa-regular fa-star';
-        }
-        localStorage.setItem('bookmarks', JSON.stringify(allBookmarks));
-    });
+    const backBtn = document.querySelector('.btn-back');
+    if (backBtn) {
+        backBtn.addEventListener('click', (e) => {
+            e.preventDefault(); // a 태그 이동 막기
+            
+            // 어디서 왔는지 확인
+            const previousPage = localStorage.getItem('previousPage');
+            
+            if (previousPage === 'dashboard') {
+                window.location.href = 'dashboard.html';
+            } else {
+                // dashboard가 아니면 무조건 북마크 목록으로 가게 되어 있음
+                window.location.href = 'bookmark.html'; 
+            }
+        });
 
+    // 2. 별표(즐겨찾기) 토글
+    const bookmarkBtn = document.getElementById('detailStarBtn');
+    if (bookmarkBtn) {
+        bookmarkBtn.addEventListener('click', () => {
+            const icon = bookmarkBtn.querySelector('i');
+            currentData.isStarred = !currentData.isStarred;
+            
+            updateStarUI(icon, currentData.isStarred);
+            localStorage.setItem('bookmarks', JSON.stringify(allBookmarks));
+        });
+    }
+
+    // 3. 메모 수정/저장 기능
     const editMemoBtn = document.getElementById('editMemoBtn');
     const memoText = document.getElementById('detailMemo');
     let isMemoEditing = false;
 
-    editMemoBtn.addEventListener('click', () => {
-        if (!isMemoEditing) {
-            memoText.readOnly = false;
-            memoText.focus();
-            memoText.style.border = "1px solid #3182F6";
-            memoText.style.outline = "none"; 
-            memoText.style.padding = "8px";
-            editMemoBtn.textContent = '저장하기';
-            isMemoEditing = true;
-        } else {
-            memoText.readOnly = true;
-            memoText.style.border = "none";
-            memoText.style.padding = "0";
-            editMemoBtn.textContent = '메모 수정하기';
-            isMemoEditing = false;
-            
-            currentData.memo = memoText.value;
-            localStorage.setItem('bookmarks', JSON.stringify(allBookmarks));
-            alert("메모가 저장되었습니다.");
-        }
-    });
+    if (editMemoBtn && memoText) {
+        editMemoBtn.addEventListener('click', () => {
+            if (!isMemoEditing) {
+                // 편집 시작
+                memoText.readOnly = false;
+                memoText.focus();
+                memoText.style.border = "1px solid #3182F6";
+                memoText.style.padding = "8px";
+                editMemoBtn.innerText = '저장하기';
+                editMemoBtn.style.backgroundColor = '#4CAF50';
+                editMemoBtn.style.color = 'white';
+                isMemoEditing = true;
+            } else {
+                // 편집 저장
+                memoText.readOnly = true;
+                memoText.style.border = "none";
+                memoText.style.padding = "10px"; // 원래 패딩 복구
+                editMemoBtn.innerText = '메모 수정하기';
+                editMemoBtn.style.backgroundColor = ''; // 원래 색 복구
+                editMemoBtn.style.color = '';
+                isMemoEditing = false;
+                
+                currentData.memo = memoText.value;
+                localStorage.setItem('bookmarks', JSON.stringify(allBookmarks));
+                alert("메모가 저장되었습니다.");
+            }
+        });
+    }
 
+    // 4. AI 요약 버튼
     const generateSummaryBtn = document.getElementById('generateSummaryBtn');
     if(generateSummaryBtn){
         generateSummaryBtn.addEventListener('click', () => {
             alert('AI 요약 기능은 서버 연동이 필요합니다.');
         });
     }
-}
+}};

@@ -209,16 +209,17 @@ function renderBookmarks() {
     });
 }
 
-// ... (goToDetail, editBookmark, toggleBookmarkStar, deleteBookmark 함수들은 기존과 동일 유지) ...
 function goToDetail(id) {
     localStorage.setItem('currentBookmarkId', id);
+    localStorage.setItem('previousPage', 'bookmark');
     localStorage.removeItem('editMode');
     window.location.href = 'bookmarkcontent.html';
 }
 
 function editBookmark(event, id) {
     event.stopPropagation();
-    localStorage.setItem('currentBookmarkId', id);
+    localStorage.setItem('currentBookmarkId', id)
+    localStorage.setItem('previousPage', 'bookmark');;
     localStorage.setItem('editMode', 'true');
     window.location.href = 'bookmarkcontent.html';
 }
