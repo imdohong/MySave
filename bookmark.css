@@ -262,11 +262,11 @@ button { border: none; background: none; cursor: pointer; font-family: inherit; 
 
 .sort-btn {
     padding: 8px 16px;
-    background-color: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
+    background-color: #E5E5E5;
+    border: none;
+    border-radius: 10px;
     font-size: 13px;
-    color: #555;
+    color: #000000;
     display: flex;
     align-items: center;
     gap: 8px;
