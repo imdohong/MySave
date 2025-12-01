@@ -256,17 +256,58 @@ function createSidebarGroupHTML(label, color, items) {
 }
 
 
-// 6. 실행
+// 6. 상단 통계 카드 업데이트 함수
+function updateDashboardStats() {
+    const totalEl = document.getElementById('totalReminderCount');
+    const descEl = document.getElementById('todayReminderDesc');
+    
+    // 요소가 없으면 실행 중단
+    if (!totalEl || !descEl) return;
+
+    const bookmarks = getDashboardData();
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    let totalIncompleteCount = 0; // 전체 미완료 (안 읽은 것)
+    let todayDueCount = 0;        // 오늘 마감 (읽음 여부 상관없음)
+
+    bookmarks.forEach(item => {
+        // 리마인드가 설정된 항목만 체크
+        if (item.reminderTime) {
+            
+            // 1. 전체 미완료 개수 세기 (안 읽은 것만)
+            if (!item.isRead) {
+                totalIncompleteCount++;
+            }
+
+            // 2. 오늘 마감 개수 세기 (읽음 여부 상관 X)
+            const targetDate = new Date(item.reminderTime);
+            const targetDayStart = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+            
+            // 날짜 차이 계산
+            const diffDays = Math.ceil((targetDayStart - todayStart) / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) {
+                todayDueCount++;
+            }
+        }
+    });
+
+    // 화면 업데이트
+    totalEl.textContent = totalIncompleteCount;
+    descEl.textContent = `오늘 마감되는 항목 ${todayDueCount} 건`;
+}
+
+// 7. 실행
 document.addEventListener('DOMContentLoaded', () => {
     const data = getDashboardData();
     
-    // 메인 카드 렌더링
     renderCards(data);
-    
-    // 사이드바 리마인드 렌더링
     renderSidebarReminders();
+    
+    // 통계 업데이트 실행
+    updateDashboardStats();
 
-    // 검색 기능
     const searchInput = document.querySelector('.search-container input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
