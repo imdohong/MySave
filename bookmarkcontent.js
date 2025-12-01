@@ -61,6 +61,12 @@ function renderDetail(data) {
         imageContainer.innerHTML = '';
     }
 
+    // 읽음 상태 버튼 UI 초기화
+    const readBtn = document.getElementById('readStatusBtn');
+    if (readBtn) {
+        updateReadStatusUI(readBtn, data.isRead);
+    }
+
     // 별표 아이콘 상태
     const starIcon = document.querySelector('#detailStarBtn i');
     updateStarUI(starIcon, data.isStarred);
@@ -68,6 +74,22 @@ function renderDetail(data) {
     // 요약 및 메모
     document.getElementById('detailAiSummary').textContent = data.aiSummary || "작성된 요약이 없습니다.";
     document.getElementById('detailMemo').value = data.memo || "";
+}
+
+// [수정됨] 이 함수를 renderDetail 밖으로 꺼냈습니다! (전역에서 쓸 수 있게)
+function updateReadStatusUI(btnElement, isRead) {
+    const textSpan = btnElement.querySelector('span');
+    const icon = btnElement.querySelector('i');
+
+    if (isRead) {
+        btnElement.classList.add('read'); // 초록색 스타일 클래스 추가
+        textSpan.textContent = "읽음 완료";
+        icon.className = "fa-solid fa-check";
+    } else {
+        btnElement.classList.remove('read'); // 스타일 제거 (회색됨)
+        textSpan.textContent = "안 읽음";
+        icon.className = "fa-regular fa-circle-check"; 
+    }
 }
 
 // 리마인드 UI 렌더링 함수
@@ -82,7 +104,6 @@ function renderReminderUI(data) {
         const dateStr = dateObj.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' });
         const timeStr = dateObj.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
         
-        // 날짜 간격 띄우기 (block & margin)
         displayEl.innerHTML = `
         <strong style="display:block; margin-bottom: 8px; color:#3182F6; font-size: 16px;">
             ${dateStr} ${timeStr}
@@ -222,24 +243,18 @@ function enableMainEditMode(currentData, allBookmarks) {
 
         // 저장 버튼 클릭 이벤트
         saveBtn.addEventListener('click', () => {
-            // 날짜 갱신
             const now = new Date();
             const newDate = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
 
-            // 데이터 업데이트
             currentData.title = titleEl.textContent;
             currentData.content = contentEl.innerHTML; 
             currentData.date = newDate; 
             
-            // 화면 갱신
             document.getElementById('detailDate').textContent = newDate;
-
-            // 로컬 스토리지 저장
             localStorage.setItem('bookmarks', JSON.stringify(allBookmarks));
 
             alert('글이 수정되었습니다.');
 
-            // 편집 모드 종료 시 스타일 완전 초기화
             titleEl.contentEditable = false;
             titleEl.style.border = "";
             titleEl.style.padding = ""; 
@@ -259,7 +274,7 @@ function enableMainEditMode(currentData, allBookmarks) {
 }
 
 function setupEventListeners(currentData, allBookmarks) {
-    // 1. 뒤로가기 버튼 (경로 분기 처리)
+    // 1. 뒤로가기 버튼
     const backBtn = document.querySelector('.btn-back');
     if (backBtn) {
         backBtn.addEventListener('click', (e) => {
@@ -321,6 +336,21 @@ function setupEventListeners(currentData, allBookmarks) {
     if(generateSummaryBtn){
         generateSummaryBtn.addEventListener('click', () => {
             alert('AI 요약 기능은 서버 연동이 필요합니다.');
+        });
+    }
+
+    // 5. 읽음/안읽음 토글 버튼 (이제 updateReadStatusUI를 찾을 수 있습니다!)
+    const readBtn = document.getElementById('readStatusBtn');
+    if (readBtn) {
+        readBtn.addEventListener('click', () => {
+            // 상태 반전
+            currentData.isRead = !currentData.isRead;
+            
+            // UI 즉시 반영
+            updateReadStatusUI(readBtn, currentData.isRead);
+            
+            // 데이터 저장
+            localStorage.setItem('bookmarks', JSON.stringify(allBookmarks));
         });
     }
 }

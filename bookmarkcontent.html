@@ -36,7 +36,14 @@
                 <div class="article-header">
                     <div class="title-row">
                         <h1 id="detailTitle">Loading...</h1>
-                        <button class="btn-star" id="detailStarBtn"><i class="fa-regular fa-star"></i></button>
+                        
+                        <div class="action-buttons" style="display:flex; gap: 10px; align-items: center;">
+                            <button id="readStatusBtn" class="btn-read-status">
+                                <i class="fa-solid fa-check"></i> <span>읽음</span>
+                            </button>
+                            
+                            <button class="btn-star" id="detailStarBtn"><i class="fa-regular fa-star"></i></button>
+                        </div>
                     </div>
                     <div class="meta-row">
                         <span class="tag" id="detailTag">#Tag</span>
