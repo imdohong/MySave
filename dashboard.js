@@ -258,44 +258,65 @@ function createSidebarGroupHTML(label, color, items) {
 
 // 6. 상단 통계 카드 업데이트 함수
 function updateDashboardStats() {
-    const totalEl = document.getElementById('totalReminderCount');
-    const descEl = document.getElementById('todayReminderDesc');
+    // DOM 요소 가져오기
+    const totalReminderEl = document.getElementById('totalReminderCount');
+    const todayReminderDescEl = document.getElementById('todayReminderDesc');
+    const weeklyRateEl = document.getElementById('weeklyRate');
+    const weeklyDescEl = document.getElementById('weeklyDesc');
     
-    // 요소가 없으면 실행 중단
-    if (!totalEl || !descEl) return;
+    // 요소가 하나라도 없으면 중단
+    if (!totalReminderEl || !todayReminderDescEl || !weeklyRateEl || !weeklyDescEl) return;
 
+    // 데이터 준비
     const bookmarks = getDashboardData();
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    
+    // 카운터 변수 초기화
+    let totalIncompleteCount = 0; // 미완료 리마인드
+    let todayDueCount = 0;        // 오늘 마감 리마인드
+    
+    let totalSavedCount = bookmarks.length; // 전체 저장된 글 개수
+    let totalReadCount = 0;                 // 전체 읽은 글 개수
 
-    let totalIncompleteCount = 0; // 전체 미완료 (안 읽은 것)
-    let todayDueCount = 0;        // 오늘 마감 (읽음 여부 상관없음)
-
+    // 데이터 순회하며 계산
     bookmarks.forEach(item => {
-        // 리마인드가 설정된 항목만 체크
+        // 리마인드 통계 계산
         if (item.reminderTime) {
-            
-            // 1. 전체 미완료 개수 세기 (안 읽은 것만)
+            // 안 읽은 리마인드 개수 (큰 숫자)
             if (!item.isRead) {
-                totalIncompleteCount++;
+                totalIncompleteCount++; 
             }
 
-            // 2. 오늘 마감 개수 세기 (읽음 여부 상관 X)
+            // 오늘 마감 개수 (작은 설명)
             const targetDate = new Date(item.reminderTime);
             const targetDayStart = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
-            
-            // 날짜 차이 계산
             const diffDays = Math.ceil((targetDayStart - todayStart) / (1000 * 60 * 60 * 24));
 
             if (diffDays === 0) {
-                todayDueCount++;
+                todayDueCount++; 
             }
+        }
+
+        // 전체 읽기 달성률 계산 
+        if (item.isRead) {
+            totalReadCount++;
         }
     });
 
     // 화면 업데이트
-    totalEl.textContent = totalIncompleteCount;
-    descEl.textContent = `오늘 마감되는 항목 ${todayDueCount} 건`;
+    // (1) 리마인드 통계 반영
+    totalReminderEl.textContent = totalIncompleteCount;
+    todayReminderDescEl.textContent = `오늘 마감되는 항목 ${todayDueCount} 건`;
+
+    // (2) 전체 읽기 달성률 반영
+    let percentage = 0;
+    if (totalSavedCount > 0) {
+        percentage = Math.round((totalReadCount / totalSavedCount) * 100);
+    }
+    
+    weeklyRateEl.textContent = percentage;
+    weeklyDescEl.textContent = `전체 ${totalSavedCount}개 중 ${totalReadCount}개 읽음`;
 }
 
 // 7. 실행
