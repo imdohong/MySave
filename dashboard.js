@@ -300,25 +300,36 @@ function updateDashboardStats() {
 
 // 7. 실행
 document.addEventListener('DOMContentLoaded', () => {
-    const data = getDashboardData();
+    // 1. 전체 데이터 가져오기
+    const allData = getDashboardData();
     
-    renderCards(data);
+    // 2. 최신순 정렬 (날짜 내림차순)
+    allData.sort((a, b) => b.date.localeCompare(a.date));
+
+    // 3. 상위 6개만 자르기
+    const recentData = allData.slice(0, 6);
+    
+    // 4. 잘라낸 데이터로 카드 그리기
+    renderCards(recentData);
+    
+    // 나머지 기능 실행
     renderSidebarReminders();
-    
-    // 통계 업데이트 실행
     updateDashboardStats();
 
+    // 검색 기능 (검색할 때는 6개 제한 없이 검색된 것 다 보여줌)
     const searchInput = document.querySelector('.search-container input');
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase().trim();
-            const allData = getDashboardData();
+            const currentData = getDashboardData(); // 다시 전체 데이터 가져옴
             
-            const filtered = allData.filter(item => 
+            // 검색어 필터링
+            const filtered = currentData.filter(item => 
                 item.title.toLowerCase().includes(keyword) || 
                 item.tag.toLowerCase().includes(keyword)
             );
             
+            // 검색 중일 때는 개수 제한 없이
             renderCards(filtered);
         });
     }
