@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. 화면 그리기
     renderDetail(currentData);
     
-    // [기능 부활] 리마인드 UI 렌더링
+    // 리마인드 UI 렌더링
     renderReminderUI(currentData);
 
     // 3. 수정 모드 체크

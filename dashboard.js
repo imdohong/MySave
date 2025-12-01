@@ -1,4 +1,4 @@
-// 1. 초기 데이터 (확장된 데이터 구조)
+// 1. 초기 데이터
 const initialDashboardData = [
     { 
         id: 1, 
@@ -81,13 +81,12 @@ function saveDashboardData(newData) {
     localStorage.setItem('bookmarks', JSON.stringify(newData));
 }
 
-// 3. 화면 렌더링
+// 3. 화면 렌더링 (메인 카드)
 function renderCards(data) {
     const cardContainer = document.getElementById('cardContainer');
     if (!cardContainer) return;
     
     cardContainer.innerHTML = ''; 
-
     data.forEach((item) => {
         const activeClass = item.isStarred ? 'active' : '';
         const starIconClass = item.isStarred ? 'fa-solid' : 'fa-regular';
@@ -98,12 +97,34 @@ function renderCards(data) {
             ? `<img src="${item.image}" style="width:100%; height:100%; object-fit:cover; border-radius: inherit;">` 
             : '<span class="summary-tag">요약됨</span>';
 
+        // 리마인드 배지 표시 로직
+        // 리마인드가 있으면 파란색 배지, 없으면 일반 날짜 표시
+        const reminderBadge = item.reminderTime 
+            ? `
+            <div style="
+                position: absolute; 
+                top: 10px; 
+                left: 10px; 
+                width: 28px; 
+                height: 28px; 
+                background-color: rgba(255, 255, 255, 0.95); 
+                border-radius: 50%; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+                box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+                z-index: 10;
+            " title="리마인드 설정됨">
+                <i class="fa-solid fa-bell" style="color: #3182F6; font-size: 13px;"></i>
+            </div>`
+            : '';
+
         const card = document.createElement('div');
         card.className = 'card';
         
         card.innerHTML = `
-            <div class="card-img" style="background-color: ${item.bgColor || '#eee'};">
-                ${unreadBadge}
+            <div class="card-img" style="background-color: ${item.bgColor || '#eee'}; position: relative;">
+                ${reminderBadge} ${unreadBadge}
                 ${imageContent}
             </div>
             <div class="card-body">
@@ -111,16 +132,16 @@ function renderCards(data) {
                 <div class="card-footer">
                     <span class="tag-badge" style="background-color: ${item.tagColor}">#${item.tag}</span>
                     <div class="date-star">
-                        <span>${item.date}</span>
+                        <span style="color: #888; font-size: 13px;">${item.date}</span>
+                        
                         <i class="star-btn ${starIconClass} fa-star ${activeClass}" style="color: ${starColor}; cursor: pointer;"></i>
                     </div>
                 </div>
             </div>
         `;
 
-        // 카드 클릭 시 페이지 이동 + 출처(from) 정보 전달
+        // 카드 클릭 이벤트
         card.addEventListener('click', () => {
-            // 읽음 처리
             if (!item.isRead) {
                 const allData = getDashboardData();
                 const target = allData.find(d => d.id === item.id);
@@ -129,6 +150,7 @@ function renderCards(data) {
                     saveDashboardData(allData);
                 }
             }
+            // 이동 전 필요한 정보 저장
             localStorage.setItem('currentBookmarkId', item.id);
             localStorage.setItem('previousPage', 'dashboard');
             localStorage.setItem('editMode', 'false');
@@ -168,8 +190,95 @@ function toggleStar(element, id) {
     }
 }
 
-// 5. 실행
+// 5. 사이드바 리마인드 렌더링 함수
+function renderSidebarReminders() {
+    const container = document.getElementById('sidebarReminderList');
+    if (!container) return; // 사이드바가 없으면 패스
+
+    const bookmarks = getDashboardData();
+    const reminders = bookmarks.filter(item => item.reminderTime);
+
+    if (reminders.length === 0) {
+        container.innerHTML = `<div style="padding: 20px; text-align: center; color: #aaa; font-size: 13px;">예정된 리마인드가 없습니다.</div>`;
+        return;
+    }
+
+    // 날짜별 분류
+    const groups = { today: [], tomorrow: [] };
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    reminders.forEach(item => {
+        const tDate = new Date(item.reminderTime);
+        const tStart = new Date(tDate.getFullYear(), tDate.getMonth(), tDate.getDate());
+        const diffDays = Math.ceil((tStart - todayStart) / (1000 * 60 * 60 * 24));
+        
+        item.displayTime = tDate.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit' });
+
+        if (diffDays === 0) groups.today.push(item);
+        else if (diffDays === 1) groups.tomorrow.push(item);
+    });
+
+    // 정렬
+    groups.today.sort((a, b) => new Date(a.reminderTime) - new Date(b.reminderTime));
+    groups.tomorrow.sort((a, b) => new Date(a.reminderTime) - new Date(b.reminderTime));
+
+    // HTML 그리기
+    container.innerHTML = '';
+    
+    if (groups.today.length > 0) {
+        container.innerHTML += createSidebarGroupHTML('오늘', 'blue', groups.today);
+    }
+    if (groups.tomorrow.length > 0) {
+        container.innerHTML += createSidebarGroupHTML('내일', 'yellow', groups.tomorrow);
+    }
+
+    if (groups.today.length === 0 && groups.tomorrow.length === 0) {
+         container.innerHTML = `<div style="padding: 20px; text-align: center; color: #aaa; font-size: 13px;">오늘, 내일 일정이 없습니다.<br><a href="reminder.html" style="color:#3182F6">전체 보기</a></div>`;
+    }
+}
+
+// 사이드바 그룹 HTML 생성 헬퍼
+function createSidebarGroupHTML(label, color, items) {
+    const listHTML = items.map(item => `
+        <div class="reminder-item" onclick="location.href='bookmarkcontent.html?id=${item.id}&from=dashboard'" style="cursor: pointer;">
+            <span class="time">${item.displayTime}</span>
+            <span class="task" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</span>
+        </div>
+    `).join('');
+
+    return `
+        <div class="day-group">
+            <div class="day-label"><span class="dot ${color}"></span> ${label}</div>
+            ${listHTML}
+        </div>
+    `;
+}
+
+
+// 6. 실행
 document.addEventListener('DOMContentLoaded', () => {
     const data = getDashboardData();
+    
+    // 메인 카드 렌더링
     renderCards(data);
+    
+    // 사이드바 리마인드 렌더링
+    renderSidebarReminders();
+
+    // 검색 기능
+    const searchInput = document.querySelector('.search-container input');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase().trim();
+            const allData = getDashboardData();
+            
+            const filtered = allData.filter(item => 
+                item.title.toLowerCase().includes(keyword) || 
+                item.tag.toLowerCase().includes(keyword)
+            );
+            
+            renderCards(filtered);
+        });
+    }
 });

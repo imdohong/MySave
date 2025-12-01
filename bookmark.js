@@ -79,10 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const searchInput = document.querySelector('.search-container input');
-    searchInput.addEventListener('input', () => {
-        currentPage = 1;
-        renderBookmarks();
-    });
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            renderBookmarks();
+        });
+    }
 
     const sortBtn = document.querySelector('.sort-btn');
     if (sortBtn) {
