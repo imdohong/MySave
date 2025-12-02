@@ -29,7 +29,88 @@
     <main class="dashboard-container">
         
         <div class="action-row">
-            <button class="btn-primary"><i class="fa-regular fa-bookmark"></i> 북마크 추가하기</button>
+            <button class="btn-primary" id="openAddModalBtn">
+                <i class="fa-regular fa-bookmark"></i> 북마크 추가하기
+            </button>
+        </div>
+
+        <div id="addBookmarkModal" class="modal-overlay" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>북마크 직접 추가</h3>
+                    <span class="close-modal">&times;</span>
+                </div>
+        
+                <div class="modal-body">
+                    <div class="input-section">
+                        <label class="field-label">
+                            <i class="fa-solid fa-link" style="color:#555; margin-right:4px;"></i> URL
+                        </label>
+                        <div class="input-box url-box">
+                            <input type="text" id="newUrl" placeholder="https://example.com">
+                        </div>
+                    </div>
+        
+                    <div class="input-section">
+                        <label class="field-label">제목</label>
+                        <div class="input-box">
+                            <input type="text" id="newTitle" placeholder="제목을 입력하세요">
+                        </div>
+                    </div>
+        
+                    <div class="input-section">
+                        <label class="field-label">메모 / 요약</label>
+                        <div class="input-box textarea-box">
+                            <textarea id="newContent" placeholder="주요 내용을 입력하세요"></textarea>
+                        </div>
+                    </div>
+        
+                    <div class="input-section">
+                        <label class="field-label">태그</label>
+                        <div class="input-box">
+                            <input type="text" id="newTagInput" placeholder="태그 입력 후 엔터 (예: Design)">
+                        </div>
+                        <div id="newTagContainer" class="tag-container" style="margin-top: 8px;"></div>
+                    </div>
+        
+                    <div class="input-section reminder-section" style="margin-top: 15px;">
+                        <div class="label-row" style="display:flex; justify-content:space-between; align-items:center;">
+                            <label class="field-label"><i class="fa-solid fa-bell"></i> 리마인드 설정</label>
+                            <label class="switch">
+                                <input type="checkbox" id="newReminderToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div id="newReminderOptions" style="display: none; margin-top: 10px;">
+    
+                            <div class="quick-options">
+                                <button class="quick-btn" id="btnTomorrow">
+                                    <span>내일</span>
+                                    <span class="sub-time">09:00</span>
+                                </button>
+                                <button class="quick-btn" id="btnWeekend">
+                                    <span>이번 주말</span>
+                                    <span class="sub-time">토 10:00</span>
+                                </button>
+                                <button class="quick-btn" id="btnNextWeek">
+                                    <span>다음 주</span>
+                                    <span class="sub-time">월 09:00</span>
+                                </button>
+                            </div>
+                        
+                            <div class="dashed-box" id="calendarTrigger">
+                                <i class="fa-regular fa-calendar-plus"></i>
+                                <span id="dateDisplay">직접 날짜 / 시간 선택하기</span>
+                            </div>
+                        
+                            <input type="datetime-local" id="newReminderDate" class="hidden-date-input">
+                        </div>
+                    </div>
+        
+                    <button id="saveNewBookmarkBtn" class="btn-save">저장하기</button>
+                </div>
+            </div>
         </div>
 
         <section class="stats-grid">
@@ -66,8 +147,7 @@
                     <h2>최근 저장 목록</h2>
                     <a href="bookmark.html" class="more-link">더보기</a>
                 </div>
-                <div class="card-grid" id="cardContainer">
-                    </div>
+                <div class="card-grid" id="cardContainer"></div>
             </section>
 
             <aside class="sidebar">
@@ -76,7 +156,6 @@
                         <h2>예정된 리마인드</h2>
                         <a href="reminder.html" class="more-link">더보기</a>
                     </div>
-                    
                     <div class="reminder-list" id="sidebarReminderList">
                         <p style="padding: 20px; text-align: center; color: #aaa; font-size: 13px;">
                             일정을 불러오는 중...
@@ -93,16 +172,9 @@
                         <span class="tag-pill blue">#AI</span>
                         <span class="tag-pill navy">#뉴스</span>
                         <span class="tag-pill navy">#Work</span>
-                        <span class="tag-pill navy">#Work</span>
-                        <span class="tag-pill navy">#Work</span>
+                        <span class="tag-pill navy">#Dev</span>
                     </div>
                 </div>
-
-                <div class="sidebar-widget">
-                     <div class="section-header">
-                        <h2>즐겨찾는 태그</h2>
-                    </div>
-                    </div>
             </aside>
         </div>
     </main>

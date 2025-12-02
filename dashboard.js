@@ -354,4 +354,227 @@ document.addEventListener('DOMContentLoaded', () => {
             renderCards(filtered);
         });
     }
+
+    // 북마크 추가하기
+    const addModal = document.getElementById('addBookmarkModal');
+    const openModalBtn = document.getElementById('openAddModalBtn');
+    const closeModalBtn = document.querySelector('.close-modal');
+    const saveNewBtn = document.getElementById('saveNewBookmarkBtn');
+    
+    const newUrlInput = document.getElementById('newUrl');
+    const newTitleInput = document.getElementById('newTitle');
+    const newContentInput = document.getElementById('newContent');
+    const newTagInput = document.getElementById('newTagInput');
+    const newTagContainer = document.getElementById('newTagContainer');
+    const newReminderToggle = document.getElementById('newReminderToggle');
+    const newReminderOptions = document.getElementById('newReminderOptions');
+    const newReminderDate = document.getElementById('newReminderDate');
+
+    const calendarTrigger = document.getElementById('calendarTrigger');
+    const dateDisplay = document.getElementById('dateDisplay');
+    const quickBtns = document.querySelectorAll('.quick-btn');
+
+    let currentTags = []; 
+
+    // 모달 열기
+    if (openModalBtn) {
+        openModalBtn.addEventListener('click', () => {
+            newUrlInput.value = '';
+            newTitleInput.value = '';
+            newContentInput.value = '';
+            newTagInput.value = '';
+            currentTags = [];
+            renderNewTags();
+            newReminderToggle.checked = false;
+            newReminderOptions.style.display = 'none';
+            newReminderDate.value = '';
+            addModal.style.display = 'flex';
+        });
+    }
+
+    // 모달 닫기
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            addModal.style.display = 'none';
+        });
+    }
+
+    window.addEventListener('click', (e) => {
+        if (e.target === addModal) addModal.style.display = 'none';
+    });
+
+    // 태그 입력
+    newTagInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const val = e.target.value.trim();
+            if (val && !currentTags.includes(val)) {
+                currentTags.push(val);
+                renderNewTags();
+            }
+            e.target.value = '';
+        }
+    });
+
+    function renderNewTags() {
+        newTagContainer.innerHTML = '';
+        currentTags.forEach((tag, idx) => {
+            const chip = document.createElement('span');
+            chip.className = 'tag-chip';
+            chip.innerHTML = `#${tag} <i class="fa-solid fa-xmark" style="margin-left:4px;"></i>`;
+            chip.onclick = () => {
+                currentTags.splice(idx, 1);
+                renderNewTags();
+            };
+            newTagContainer.appendChild(chip);
+        });
+    }
+
+    // 날짜 포맷 함수 (로컬 시간 ISOString)
+    function formatDateTime(date) {
+        const offset = date.getTimezoneOffset() * 60000;
+        return (new Date(date - offset)).toISOString().slice(0, 16);
+    }
+
+    // 화면 날짜 표시 업데이트 함수
+    function updateDateDisplay(dateStr) {
+        if(!dateStr) {
+            if (dateDisplay) dateDisplay.innerText = "직접 날짜 / 시간 선택하기";
+            if (calendarTrigger) {
+                calendarTrigger.style.borderColor = "";
+                calendarTrigger.style.backgroundColor = "";
+            }
+            return;
+        }
+        const dateObj = new Date(dateStr);
+        const month = dateObj.getMonth() + 1;
+        const day = dateObj.getDate();
+        const hour = dateObj.getHours().toString().padStart(2, '0');
+        const min = dateObj.getMinutes().toString().padStart(2, '0');
+        
+        if (dateDisplay) dateDisplay.innerText = `${month}월 ${day}일 ${hour}:${min}`;
+        
+        if (calendarTrigger) {
+            calendarTrigger.style.borderColor = "rgba(52, 84, 130, 1)";
+            calendarTrigger.style.backgroundColor = "rgba(52, 82, 130, 0.11)";
+        }
+    }
+
+    // 빠른 날짜 계산 함수
+    function setQuickDate(daysToAdd, hour) {
+        const d = new Date();
+        d.setDate(d.getDate() + daysToAdd);
+        d.setHours(hour, 0, 0, 0);
+        return d;
+    }
+
+    // 빠른 날짜 적용 함수
+    function applyQuickDate(dateObj, btnId) {
+        const formatted = formatDateTime(dateObj);
+        newReminderDate.value = formatted;
+        updateDateDisplay(formatted);
+        quickBtns.forEach(b => b.classList.remove('active'));
+        document.getElementById(btnId).classList.add('active');
+    }
+
+    // 리마인드 토글 이벤트
+    newReminderToggle.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            newReminderOptions.style.display = 'block';
+        } else {
+            newReminderOptions.style.display = 'none';
+            newReminderDate.value = '';
+            quickBtns.forEach(btn => btn.classList.remove('active'));
+            updateDateDisplay(null);
+        }
+    });
+
+    if (calendarTrigger) {
+        calendarTrigger.addEventListener('click', () => {
+            try { 
+                newReminderDate.showPicker(); 
+            } catch (err) { 
+                newReminderDate.focus(); 
+                newReminderDate.click(); 
+            }
+        });
+    }
+
+    // 날짜 변경 시 화면 업데이트
+    newReminderDate.addEventListener('change', () => {
+        quickBtns.forEach(b => b.classList.remove('active'));
+        updateDateDisplay(newReminderDate.value);
+    });
+
+    // 버튼 이벤트 연결 (내일, 주말, 다음주)
+    const btnTomorrow = document.getElementById('btnTomorrow');
+    if (btnTomorrow) {
+        btnTomorrow.addEventListener('click', function() {
+            applyQuickDate(setQuickDate(1, 9), this.id);
+        });
+    }
+
+    const btnWeekend = document.getElementById('btnWeekend');
+    if (btnWeekend) {
+        btnWeekend.addEventListener('click', function() {
+            const d = new Date();
+            const day = d.getDay();
+            const dist = 6 - day + (day === 6 ? 7 : 0);
+            d.setDate(d.getDate() + dist);
+            d.setHours(10, 0, 0, 0);
+            applyQuickDate(d, this.id);
+        });
+    }
+
+    const btnNextWeek = document.getElementById('btnNextWeek');
+    if (btnNextWeek) {
+        btnNextWeek.addEventListener('click', function() {
+            const d = new Date();
+            const day = d.getDay();
+            const dist = 8 - day;
+            d.setDate(d.getDate() + dist);
+            d.setHours(9, 0, 0, 0);
+            applyQuickDate(d, this.id);
+        });
+    }
+
+    // 저장하기
+    saveNewBtn.addEventListener('click', () => {
+        const title = newTitleInput.value.trim();
+        const url = newUrlInput.value.trim();
+        
+        if (!title) { alert('제목을 입력해주세요.'); return; }
+
+        const now = new Date();
+        const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+
+        const newBookmark = {
+            id: Date.now(),
+            title: title,
+            url: url,
+            tag: currentTags.length > 0 ? currentTags[0] : 'Etc', 
+            tagColor: '#555',
+            date: dateStr,
+            bgColor: '#f0f0f0',
+            isStarred: false,
+            isRead: false,
+            hasSummary: !!newContentInput.value,
+            content: newContentInput.value,
+            image: '', 
+            reminderTime: newReminderToggle.checked && newReminderDate.value ? new Date(newReminderDate.value).toISOString() : null
+        };
+
+        const currentData = getDashboardData();
+        currentData.unshift(newBookmark);
+        saveDashboardData(currentData);
+
+        // 화면 갱신
+        currentData.sort((a, b) => b.date.localeCompare(a.date));
+        renderCards(currentData.slice(0, 6));
+        renderSidebarReminders();
+        updateDashboardStats();
+
+        addModal.style.display = 'none';
+        alert('북마크가 추가되었습니다.');
+    });
 });

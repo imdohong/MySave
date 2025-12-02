@@ -343,3 +343,133 @@ li { list-style: none; }
         gap: 15px;
     }
 }
+
+/* 북마크 추가하기 */
+/* 1. 모달 레이아웃 */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    width: 400px; /* 확장프로그램 너비와 비슷하게 */
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* 모달 헤더 */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.modal-header h3 { font-size: 18px; font-weight: 700; color: #333; }
+.close-modal { font-size: 28px; cursor: pointer; color: #999; line-height: 1; }
+.close-modal:hover { color: #333; }
+
+/* 2. 입력 필드 (확장프로그램 스타일) */
+.input-section { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+.field-label { 
+    font-size: 13px; font-weight: 600; color: #333; 
+    display: flex; align-items: center; gap: 4px; 
+}
+.label-icon { width: 14px; height: 14px; object-fit: contain; }
+
+.input-box {
+    display: flex; align-items: center;
+    background-color: rgba(52, 82, 130, 0.11); /* 연한 푸른 회색 배경 */
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0 12px;
+    height: 44px;
+    transition: all 0.2s;
+}
+
+.input-box:focus-within {
+    background-color: white;
+    border-color: rgba(52, 84, 130, 1);
+    box-shadow: 0 0 0 2px rgba(52, 84, 130, 0.1);
+}
+
+.input-box input, .input-box textarea {
+    width: 100%; border: none; background: transparent; outline: none; 
+    font-size: 14px; color: #333;
+}
+
+.textarea-box { height: auto; padding: 12px; }
+.textarea-box textarea { resize: none; height: 80px; line-height: 1.5; }
+
+/* 3. 태그 칩 */
+.tag-container { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-chip {
+    background-color: #e3f2fd; color: #3182F6;
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; gap: 4px;
+}
+.tag-chip:hover { background-color: #bbdefb; }
+
+/* 4. 리마인드 & 스위치 */
+.reminder-section .label-row {
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 2px; bottom: 2px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: #3182F6; }
+input:checked + .slider:before { transform: translateX(16px); }
+
+/* 리마인드 날짜 입력창 */
+#reminderOptions { margin-top: 12px; }
+
+.quick-options { display: flex; gap: 8px; margin-bottom: 10px; }
+.quick-btn {
+    flex: 1; padding: 8px 0; border:none;
+    background: rgba(52, 82, 130, 0.11); border-radius: 8px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    color: #555; transition: 0.2s;
+}
+.quick-btn span { font-size: 12px; font-weight: 600; }
+.quick-btn .sub-time { font-size: 10px; color: #999; font-weight: 400; }
+.quick-btn.active {
+    background-color: rgba(52, 84, 130, 0.1); border-color: rgba(52, 84, 130, 1); color: rgba(52, 84, 130, 1);
+}
+.quick-btn.active .sub-time { color: rgba(52, 84, 130, 0.8); }
+
+.dashed-box {
+    width: 100%; height: 44px;
+    border: 1.5px dashed rgba(52, 84, 130, 0.4); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    color: rgba(52, 84, 130, 0.8); font-size: 13px; font-weight: 600;
+    cursor: pointer; background-color: #fafafa; transition: 0.2s;
+}
+.dashed-box:hover { background-color: rgba(52, 84, 130, 0.05); border-color: rgba(52, 84, 130, 1); }
+.hidden-date-input { 
+    position: absolute; 
+    opacity: 0; 
+    pointer-events: none; 
+    height: 0; width: 0;
+}
+
+/* 5. 저장 버튼 */
+.btn-save {
+    width: 100%; height: 48px;
+    background-color: rgba(52, 84, 130, 1); color: white;
+    font-size: 16px; font-weight: 700;
+    border: none; border-radius: 12px; 
+    margin-top: 10px; cursor: pointer; transition: background 0.2s;
+}
+.btn-save:hover { background-color: #1b64da; }
