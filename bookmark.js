@@ -60,13 +60,30 @@ let currentPage = 1;
 const itemsPerPage = 12;
 
 document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.querySelector('.search-container input');
+    // 1. URL 파라미터 처리 (다른 페이지에서 넘어온 경우)
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('q');
+
+    if (searchParam && searchInput) {
+        searchInput.value = searchParam; // 검색어 채우기
+    }
+    
+    // 2. 검색창 이벤트 리스너 연결 (변수 재선언 없이 바로 사용)
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            renderBookmarks();
+        });
+    }
+
+    // 초기 데이터 로드
     if (!localStorage.getItem('bookmarks')) {
         localStorage.setItem('bookmarks', JSON.stringify(initialBookmarkData));
     }
 
     renderBookmarks();
 
-    // --- 기존 이벤트 리스너들 (필터, 검색, 정렬 등) ---
     const filterButtons = document.querySelectorAll('.filter-btn');
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -77,14 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBookmarks();
         });
     });
-
-    const searchInput = document.querySelector('.search-container input');
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            currentPage = 1;
-            renderBookmarks();
-        });
-    }
 
     const sortBtn = document.querySelector('.sort-btn');
     if (sortBtn) {
@@ -120,9 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-/**
- * 북마크 렌더링 함수 (이미지 유무 체크 로직 추가됨)
- */
 function renderBookmarks() {
     const searchQuery = document.querySelector('.search-container input').value;
     const container = document.getElementById('bookmarkCardContainer');
@@ -130,7 +136,7 @@ function renderBookmarks() {
 
     const bookmarks = JSON.parse(localStorage.getItem('bookmarks'));
 
-    // 필터링 및 정렬 로직 (기존과 동일)
+    // 필터링 및 정렬 로직
     let filteredData = bookmarks;
     if (currentFilterType === 'starred') filteredData = bookmarks.filter(item => item.isStarred);
     else if (currentFilterType === 'read') filteredData = bookmarks.filter(item => item.isRead);
@@ -175,7 +181,7 @@ function renderBookmarks() {
 
         const starClass = item.isStarred ? 'fa-solid fa-star active' : 'fa-regular fa-star';
 
-        // [핵심 변경] 이미지가 있는지 확인하여 HTML 조립
+        // 이미지가 있는지 확인하여 HTML 조립
         let imageHTML = '';
         
         // 이미지가 있으면: 회색 박스(card-img) + 이미지 태그 + 요약 배지

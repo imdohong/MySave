@@ -1,5 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
     loadAndRenderReminders();
+
+    const searchInput = document.querySelector('.search-container input');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { // 엔터키를 눌렀을 때만 실행
+                const query = e.target.value.trim();
+                if (query) {
+                    // 검색어를 가지고 북마크 목록 페이지로 이동
+                    // 예: bookmark.html?q=React
+                    window.location.href = `bookmark.html?q=${encodeURIComponent(query)}`;
+                }
+            }
+        });
+    }
 });
 
 function loadAndRenderReminders() {

@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. 다크 모드 토글 로직 (버튼이 존재할 때만 실행)
     if (darkModeToggle) {
-        // [중요] 페이지 로드 시, 저장된 상태를 보고 스위치 위치(ON/OFF) 맞추기
+        // 페이지 로드 시, 저장된 상태를 보고 스위치 위치(ON/OFF) 맞추기
         if (localStorage.getItem('darkMode') === 'true') {
             darkModeToggle.checked = true;
         }
@@ -42,6 +42,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (editBtn) {
         editBtn.addEventListener('click', () => {
             alert('프로필 이미지 변경 창이 열립니다.');
+        });
+    }
+
+    // 5. 검색창 엔터키 기능
+    const searchInput = document.querySelector('.search-container input');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { // 엔터키를 눌렀을 때만 실행
+                const query = e.target.value.trim();
+                if (query) {
+                    // 검색어를 가지고 bookmark.html로 이동
+                    window.location.href = `bookmark.html?q=${encodeURIComponent(query)}`;
+                }
+            }
         });
     }
 });
