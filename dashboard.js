@@ -538,41 +538,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 저장하기
-    saveNewBtn.addEventListener('click', () => {
-        const title = newTitleInput.value.trim();
-        const url = newUrlInput.value.trim();
+   // 저장하기
+   saveNewBtn.addEventListener('click', () => {
+    const title = newTitleInput.value.trim();
+    const url = newUrlInput.value.trim();
+    
+    if (!title) { alert('제목을 입력해주세요.'); return; }
+
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+
+    const newBookmark = {
+        id: Date.now(),
+        title: title,
+        url: url,
+        tag: currentTags.length > 0 ? currentTags[0] : 'Etc', 
+        tagColor: '#555',
+        date: dateStr,
+        bgColor: '#f0f0f0',
+        isStarred: false,
+        isRead: false,
+        hasSummary: !!newContentInput.value,
         
-        if (!title) { alert('제목을 입력해주세요.'); return; }
+        content: newContentInput.value, // 카드에 미리보기로 뜰 내용 (요약)
+        memo: newContentInput.value,    // 상세 페이지 '메모'란에 들어갈 내용
+        
+        image: '', 
+        reminderTime: newReminderToggle.checked && newReminderDate.value ? new Date(newReminderDate.value).toISOString() : null
+    };
 
-        const now = new Date();
-        const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+    const currentData = getDashboardData();
+    currentData.unshift(newBookmark);
+    saveDashboardData(currentData);
 
-        const newBookmark = {
-            id: Date.now(),
-            title: title,
-            url: url,
-            tag: currentTags.length > 0 ? currentTags[0] : 'Etc', 
-            tagColor: '#555',
-            date: dateStr,
-            bgColor: '#f0f0f0',
-            isStarred: false,
-            isRead: false,
-            hasSummary: !!newContentInput.value,
-            content: newContentInput.value,
-            image: '', 
-            reminderTime: newReminderToggle.checked && newReminderDate.value ? new Date(newReminderDate.value).toISOString() : null
-        };
-
-        const currentData = getDashboardData();
-        currentData.unshift(newBookmark);
-        saveDashboardData(currentData);
-
-        // 화면 갱신
-        currentData.sort((a, b) => b.date.localeCompare(a.date));
-        renderCards(currentData.slice(0, 6));
-        renderSidebarReminders();
-        updateDashboardStats();
+    // 화면 갱신
+    currentData.sort((a, b) => b.date.localeCompare(a.date));
+    renderCards(currentData.slice(0, 6));
+    renderSidebarReminders();
+    updateDashboardStats();
 
         addModal.style.display = 'none';
         alert('북마크가 추가되었습니다.');
