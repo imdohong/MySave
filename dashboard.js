@@ -541,10 +541,14 @@ document.addEventListener('DOMContentLoaded', () => {
    // 저장하기
    saveNewBtn.addEventListener('click', () => {
     const title = newTitleInput.value.trim();
-    const url = newUrlInput.value.trim();
-    
+    let url = newUrlInput.value.trim(); // const -> let으로 변경 (수정 가능하게)    
     if (!title) { alert('제목을 입력해주세요.'); return; }
 
+    // URL 처리 로직 추가
+    // URL이 입력되었는데, http:// 나 https:// 로 시작하지 않는다면 앞에 https:// 를 붙여준다.
+    if (url && !url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+    }
     const now = new Date();
     const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
 
