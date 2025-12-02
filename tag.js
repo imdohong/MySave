@@ -24,6 +24,20 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('tagNameInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addNewTag();
     });
+
+    // 검색창 기능 추가
+    const searchInput = document.querySelector('.search-container input');
+    if (searchInput) {
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { // 엔터키를 눌렀을 때만 실행
+                const query = e.target.value.trim();
+                if (query) {
+                    // 검색어를 가지고 bookmark.html로 이동
+                    window.location.href = `bookmark.html?q=${encodeURIComponent(query)}`;
+                }
+            }
+        });
+    }
 });
 
 // ==========================================
@@ -41,8 +55,9 @@ function saveTags(tags) {
 
 // ★ 북마크 개수 세기 (실제 데이터 기반)
 function getCountForTag(tagName) {
-    const bookmarks = JSON.parse(localStorage.getItem('myBookmarks')) || [];
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
     // 저장된 북마크 중 태그 이름이 같은 것의 개수를 셈
+    // (대시보드 데이터 구조상 tag 필드와 비교)
     return bookmarks.filter(item => item.tag === tagName).length;
 }
 
